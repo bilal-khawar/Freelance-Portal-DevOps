@@ -1,0 +1,32 @@
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+.venv/
+env/
+ENV/
+
+# IDE/editor folders
+.vscode/
+.idea/
+
+# Static and media (if built locally)
+staticfiles/
+media/
+
+# Local database
+db.sqlite3
+db.sqlite3-journal
+
+# OS files
+.DS_Store
+
+# Secret files
+*.env
+credentials.json
+token.json
+
+# Coverage reports
+htmlcov/
+.coverage
