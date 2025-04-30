@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: freelance-portal-service
+  namespace: freelance-portal-namespace
+  labels:
+    app: freelance-portal
+spec:
+  selector:
+    app: freelance-portal
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+  type: ClusterIP

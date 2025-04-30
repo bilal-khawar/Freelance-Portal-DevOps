@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: freelance-portal-deployment
+  namespace: freelance-portal-namespace
+  labels:
+    app: freelance-portal
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: freelance-portal
+  template:
+    metadata:
+      labels:
+        app: freelance-portal
+    spec:
+      containers:
+        - name: freelance-portal
+          image: 22i0786/freelance-portal:latest
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: django-config
+            - secretRef:
+                name: django-secret

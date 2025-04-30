@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: django-config
+  namespace: freelance-portal-namespace
+data:
+  DEBUG: "True"
+  USE_SQLITE: "True"
+  ALLOWED_HOSTS: "localhost,127.0.0.1"
