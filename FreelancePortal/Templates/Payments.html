@@ -1,0 +1,406 @@
+<!-- NOTE: Also link this employer's dashboard as I couldn't find appropriate link for this page over there -->
+
+{% extends 'base2.html' %} {% load static %} {% block title %}Payments |
+EarnSync{% endblock %} {% block extra_css %}
+<style>
+  .Payments {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 2rem;
+    background-color: #f8f9fa;
+  }
+
+  .header h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #212529;
+  }
+
+  .header p {
+    color: #6c757d;
+    font-size: 1.05rem;
+  }
+
+  .recent-projects {
+    background-color: #ffffff;
+    border-radius: 1rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+    padding: 1rem 2rem;
+    overflow-x: auto;
+  }
+
+  .recent-projects-header h5 {
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: #343a40;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #dee2e6;
+  }
+
+  .recent-projects-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+  }
+
+  .recent-projects-table th,
+  .recent-projects-table td {
+    text-align: left;
+    padding: 1rem;
+    border-bottom: 1px solid #f1f3f5;
+    font-size: 0.95rem;
+    color: #495057;
+  }
+
+  .recent-projects-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+  }
+
+  .payment-details {
+    font-weight: 500;
+    color: #198754;
+  }
+
+  .payment-status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .payment-btn {
+    border-radius: 10px;
+    background-color: #0d6efd;
+    color: white;
+    border: none;
+    padding: 0.3rem 1rem;
+    font-size: 0.85rem;
+    cursor: pointer;
+    min-width: fit-content;
+    transition: all 0.3s ease;
+  }
+
+  .payment-btn:hover {
+    background-color: #ffffff;
+    border: 1px solid #0d6efd;
+    color: #0d6efd;
+  }
+
+  .badge {
+    padding: 0.4rem 0.7rem;
+    font-size: 0.8rem;
+    border-radius: 0.5rem;
+  }
+
+  .popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    /* visibility: hidden; */
+  }
+
+  .bgOverlay {
+    position: absolute;
+    inset: 0;
+    background: #030615;
+    opacity: 0.6;
+  }
+
+  .popupContent {
+    position: relative;
+    z-index: 2;
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+    animation: fadeIn 0.3s ease-in-out;
+  }
+
+  .popupContent h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #0f0f0f;
+  }
+
+  .popupContent p {
+    font-size: 1rem;
+    color: #0f0f0f;
+    margin-bottom: 1.5rem;
+  }
+
+  .popupContent button {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .popupContent button:hover {
+    background-color: #024b9a;
+  }
+
+  .popupContent button i {
+    margin-left: 0.5rem;
+    font-size: 1rem;
+  }
+
+  @media (max-width: 580px) {
+    .Payments {
+      padding: 1rem;
+    }
+
+    .header {
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 1.5rem;
+    }
+
+    .header p {
+      font-size: 0.95rem;
+    }
+
+    .recent-projects {
+      padding: 1rem;
+    }
+
+    .recent-projects-header h5 {
+      font-size: 1.1rem;
+      text-align: center;
+    }
+
+    .recent-projects-table {
+      display: block;
+      width: 100%;
+    }
+
+    .recent-projects-table thead {
+      display: none; /* hide header row */
+    }
+
+    .recent-projects-table tbody {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .recent-projects-table tr {
+      display: flex;
+      flex-direction: column;
+      background-color: #fff;
+      border-radius: 0.75rem;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      padding: 1rem;
+    }
+
+    .recent-projects-table td {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      padding: 0.5rem 0;
+      border: none;
+      border-bottom: 1px solid #eee;
+    }
+
+    .recent-projects-table td:last-child {
+      border-bottom: none;
+    }
+
+    .recent-projects-table td::before {
+      content: attr(data-label);
+      font-weight: 600;
+      color: #343a40;
+    }
+
+    .payment-btn {
+      padding: 0.4rem 0.8rem;
+      font-size: 0.8rem;
+    }
+
+    .popupContent {
+      padding: 1.2rem;
+      width: 95%;
+    }
+
+    .popupContent h2 {
+      font-size: 1.25rem;
+    }
+
+    .popupContent p {
+      font-size: 0.9rem;
+    }
+
+    .popupContent button {
+      font-size: 0.9rem;
+    }
+  }
+
+  @media (min-width: 581px) and (max-width: 768px) {
+    .Payments {
+      padding: 1.5rem;
+    }
+
+    .header h1 {
+      font-size: 1.75rem;
+    }
+
+    .recent-projects {
+      padding: 1.2rem 1.5rem;
+    }
+
+    .recent-projects-table th,
+    .recent-projects-table td {
+      font-size: 0.9rem;
+      padding: 0.85rem;
+    }
+  }
+</style>
+{% endblock %} {% block content %}
+
+<div class="Payments">
+  <div class="header">
+    <h1>Payments {{ role}}</h1>
+    <p id="tagline"></p>
+  </div>
+
+  <div class="projects-display">
+    <div class="recent-projects" id="active-projects">
+      <div class="recent-projects-header">
+        <h5>Miestone Payments</h5>
+      </div>
+
+      <div class="recent-projects-table-container">
+        <table class="recent-projects-table">
+          <thead>
+            <tr>
+              <th>Project Name</th>
+              <th>Client</th>
+              <th>Payment Details</th>
+              <th>Payment Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for mile in milestones%}
+            <tr>
+              <td data-label="Project Name">{{ mile.job.title }}</td>
+              <td data-label="Client">{{ mile.title }}</td>
+
+              <td data-label="Payment Details">
+                <div class="payment-details">${{ mile.budget }}</div>
+              </td>
+              {% if mile.status == "in_progress" or mile.status == "pending" %}
+              <td data-label="Payment Status">
+                <div class="payment-status">
+                  <span class="badge bg-warning text-dark">Held</span>
+                </div>
+              </td>
+              {% elif mile.status == "completed" %}
+              <td data-label="Payment Status">
+                <div class="payment-status">
+                  <span class="badge bg-success">Completed</span>
+                </div>
+              </td>
+              {% endif %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="projects-display">
+    <div class="recent-projects" id="active-projects">
+      <div class="recent-projects-header">
+        <h5>Project Payments</h5>
+      </div>
+
+      <div class="recent-projects-table-container">
+        <table class="recent-projects-table">
+          <thead>
+            <tr>
+              <th>Project Name</th>
+              <th>Client</th>
+              <th>Payment Details</th>
+              <th>Payment Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for proj in jobs%}
+            <tr>
+              <td data-label="Project Name">{{ proj.title}}</td>
+              <td data-label="Client">{{ proj.employer.company_name }}</td>
+
+              <td data-label="Payment Details">
+                <div class="payment-details">${{ proj.total_budget }} </div>
+              </td>
+
+              {% if proj.status == "in_progress"  %}
+              <td data-label="Payment Status">
+                <div class="payment-status">
+                  <span class="badge bg-warning text-dark">Held</span>
+                </div>
+              </td>
+              
+              {% elif proj.status == "open"  %}
+              <td data-label="Payment Status">
+                <div class="payment-status">
+                  <span class="badge bg-warning text-dark">No Submissions</span>
+                </div>
+              </td>
+              {% elif proj.status == "completed" %}
+              <td data-label="Payment Status">
+                <div class="payment-status">
+                  <span class="badge bg-success">Completed</span>
+                </div>
+              </td>
+              {% endif %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="popup" id="popup">
+    <div class="bgOverlay"></div>
+    <div class="popupContent">
+      <h2>Invoice</h2>
+      <div class="invoice-details">
+        <p><strong>Project:</strong> Website Redesign Project</p>
+        <p><strong>Client:</strong> Acme Corp</p>
+        <p><strong>Amount:</strong> $2,500.00</p>
+        <p><strong>Due Date:</strong> December 31, 2023</p>
+      </div>
+      <div class="invoice-actions">
+        <!-- for freelancer -->
+        <button class="confirm-btn">
+          Confirm Invoice <i class="fas fa-check"></i>
+        </button>
+        <!-- for EMPLOYER -->
+        <!-- <button class="confirm-btn">Confirm Payment <i class="fas fa-check"></i></button> -->
+        <button class="cancel-btn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="{% static 'JS/Payments.js' %}"></script>
+
+  {% endblock %}
+</div>

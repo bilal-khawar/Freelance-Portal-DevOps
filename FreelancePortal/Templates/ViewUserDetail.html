@@ -1,0 +1,401 @@
+{% extends 'base2.html' %}
+{% block title %}User Details{% endblock %}
+
+{% block extra_css %}
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            margin: 2rem;
+            margin-left: 0;
+        }
+
+        .container {
+            max-width: 1000px;
+            min-width: 300px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            text-align: center;
+            color: #333;
+            margin-bottom: 40px;
+        }
+
+        .section {
+            margin-bottom: 50px;
+        }
+
+        .section h3 {
+            color: #4a6fdc;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 8px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .info-item {
+            background: #f9f9f9;
+            padding: 12px 15px;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        .info-value {
+            margin-top: 5px;
+            color: #222;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        thead {
+            background-color: #4a6fdc;
+            color: white;
+        }
+
+        th, td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .table-header:hover {
+            background-color: #4a6fdc;
+            color: white;
+        }
+
+        .tag {
+            background-color: #e6f0ff;
+            color: #2a4dad;
+            padding: 5px 10px;
+            border-radius: 12px;
+            display: inline-block;
+            margin-right: 8px;
+            margin-top: 8px;
+        }
+
+        .rating {
+            color: goldenrod;
+            font-size: 1.2rem;
+        }
+
+        .empty-message {
+            color: #999;
+            font-style: italic;
+        }
+
+        .btn-container {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-evenly;
+            margin-top: 40px;
+        }
+
+        .btn-container .btn {
+            background-color: #4a6fdc;
+            color: white;
+            width: 30%;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        .btn-container .btn:hover {
+            background-color: #3653aa;
+        }
+
+        .btn-container .btn-secondary {
+            background-color: #dc3545;
+        }
+
+        .btn-container .btn-secondary:hover {
+            background-color: #c82333;
+        }
+
+        .btn-container .btn-primary {
+            background-color: #007bff;
+        }
+
+        .btn-container .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        /* .btn {
+            width: 40%;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        .btn-primary{
+            background-color: #007bff;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        } */
+        
+        ul {
+        padding-left: 20px;
+    }
+
+    ul li {
+        margin-bottom: 8px;
+        color: #444;
+    }
+
+    @media (max-width: 768px) {
+        body{
+            margin: 0;
+        }
+
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .btn-container {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .btn-container .btn {
+            width: 80%;
+            margin-bottom: 10px;
+        }
+
+        .btn1 {
+            width: 80%;
+            margin-bottom: 10px;
+        }
+    }
+
+    /* @media (max-width: 480px) {
+        h2 {
+            font-size: 1.5rem;
+        }
+
+        .info-item {
+            padding: 10px;
+        }
+
+        th, td {
+            padding: 8px;
+        }
+
+        .btn1 {
+            padding: 8px 12px;
+            font-size: 0.9rem;
+        }
+    } */
+
+    @media (max-width: 600px){
+        .btn1{
+            width: 100%;
+            margin-top: 0px;
+        }
+        
+        table thead {
+            display: none;
+        }
+
+        table, tbody, tr, td {
+            display: block;
+            width: 100%;
+        }
+
+        tr {
+            margin-bottom: 1.2rem;
+            padding: 15px;
+            border-radius: 12px;
+            background-color: #f9f9ff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease;
+        }
+
+        tr:hover {
+            transform: scale(1.01);
+        }
+
+        td {
+            padding: 10px 15px 10px 50%;
+            text-align: left;
+            border: none;
+            position: relative;
+            box-sizing: border-box;
+            font-size: 15px;
+            color: #333;
+        }
+
+        td::before {
+            content: attr(data-label);
+            position: absolute;
+            left: 15px;
+            top: 10px;
+            width: 40%;
+            font-weight: 600;
+            color: #6c63ff; /* Purple-blue label */
+            text-transform: uppercase;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+        }
+    }
+
+    </style>
+{% endblock %}
+
+{% block content %}
+    <body>
+        <div class="container">
+            <h2>User Details</h2>
+
+            <!-- Personal Details -->
+            <div class="section">
+                <h3>Personal Details</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Full Name</div>
+                        <div class="info-value">{{ user.first_name }} {{ user.last_name }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Email</div>
+                        <div class="info-value">{{ user.email }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Phone</div>
+                        <div class="info-value">{{ user.phone_number }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">User Type</div>
+                        <div class="info-value">{{ user.user_type|title }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Date Joined</div>
+                        <div class="info-value">{{ user.date_joined|date:"F j, Y" }}</div>
+                    </div>
+                </div>
+            </div>
+
+            {% if user.user_type != 'admin' %}
+                <!-- Performance -->
+                <div class="section">
+                    <h3>Performance</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Total Projects</div>
+                            <div class="info-value">10</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Completed Projects</div>
+                            <div class="info-value">8</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Ongoing Projects</div>
+                            <div class="info-value">2</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Total Earnings</div>
+                            <div class="info-value">$25,000</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Projects -->
+                <div class="section">
+                    <h3>Projects</h3>
+                    <table>
+                        <thead>
+                            <tr class="table-header">
+                                <th>Title</th>
+                                <th>Status</th>
+                                <th>Budget</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td data-label="Title">CRM Dashboard</td>
+                                <td data-label="Status">Completed</td>
+                                <td data-label="Budget">$5,000</td>
+                                <td data-label="Start Date">Jun 01, 2022</td>
+                                <td data-label="End Date">Aug 15, 2022</td>
+                            </tr>
+                            <tr>
+                                <td data-label="Title">E-commerce Site</td>
+                                <td data-label="Status">Ongoing</td>
+                                <td data-label="Budget">$7,000</td>
+                                <td data-label="Start Date">Jan 10, 2023</td>
+                                <td data-label="End Date">Apr 10, 2023</td>
+                            </tr>
+                            <tr>
+                                <td data-label="Title">Portfolio Website</td>
+                                <td data-label="Status">Completed</td>
+                                <td data-label="Budget">$1,500</td>
+                                <td data-label="Start Date">Nov 20, 2021</td>
+                                <td data-label="End Date">Dec 05, 2021</td>
+                            </tr>        
+                        </tbody>
+                    </table>
+                </div>
+
+                {% if user.user_type == 'freelancer' %}
+                    <!-- Skills -->
+                    <div class="section">
+                        <h3>Skills</h3>
+                        <span class="tag">Python</span>
+                        <span class="tag">Django</span>
+                        <span class="tag">React</span>
+                        <span class="tag">PostgreSQL</span>
+                    </div>
+                {% endif %}
+
+                <!-- Feedback / Ratings -->
+                <div class="section">
+                    <h3>Feedback & Ratings</h3>
+                    <div class="info-item" style="margin-bottom: 15px;">
+                        <div class="info-label">Alice Smith — <span class="rating">★ 5/5</span></div>
+                        <div class="info-value" style="margin-top: 8px;">Excellent work and very responsive!</div>
+                    </div>
+                    <div class="info-item" style="margin-bottom: 15px;">
+                        <div class="info-label">Mark Johnson — <span class="rating">★ 4/5</span></div>
+                        <div class="info-value" style="margin-top: 8px;">Great job, but a little delay on the delivery.</div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="btn-container">
+                <button class="btn btn-primary" onclick="window.location.href="{% url 'user_block' user.id %}"">Block User</button>
+                <button class="btn btn-primary" onclick="window.location.href="{% url 'user_block' user.id %}"">Unblock User</button>
+                <button class="btn btn-secondary" onclick="window.location.href="{% url 'user_delete' user.id %}"">Delete User</button>
+            </div>
+        </div>
+    </body>
+{% endblock %}

@@ -1,0 +1,241 @@
+{% extends "base.html" %}
+
+{% block title %}Login - EarnSync{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --white: #ffffff;
+        --primary-color: #0d6efd;
+        --primary-color-light: #4dabf7;
+        --text-secondary: #6c757d;
+        --border-radius: 15px;
+        --box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
+    }
+
+    /* Login Container Styles */
+    .login-container {
+        width: 100%;
+        max-width: 450px;
+        background-color: var(--white);
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        overflow: hidden;
+        position: relative;
+        margin: 2rem auto;
+        transform-style: preserve-3d;
+        transform: rotateX(-10deg) translateZ(-100px);
+        transition: var(--transition);
+        will-change: transform;
+    }
+
+    .login-container:hover {
+        transform: rotateX(0) translateZ(0);
+    }
+
+    /* Header Styling */
+    .login-header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-light) 100%);
+        color: var(--white);
+        text-align: center;
+        padding: 2.5rem 2rem;
+    }
+
+    /* Body Styling */
+    .login-body {
+        padding: 2.5rem 2rem;
+        background-color: var(--white);
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: var(--text-secondary);
+        font-weight: 600;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.875rem 1.25rem;
+        border: 2px solid #e1e5eb;
+        border-radius: 10px;
+        font-size: 1rem;
+        background-color: #f9fafc;
+        transition: var(--transition);
+    }
+
+    .form-control:focus, 
+    .form-control:hover {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(74, 111, 220, 0.1);
+        background-color: var(--white);
+    }
+
+    /* Error Message Animation */
+    .error-message {
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        animation: errorShake 0.3s;
+    }
+
+    @keyframes errorShake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        75% { transform: translateX(5px); }
+    }
+
+    /* Remember Me Checkbox */
+    .remember-check {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .remember-check input[type="checkbox"] {
+        margin-right: 0.75rem;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        border: 2px solid var(--primary-color);
+        border-radius: 4px;
+        outline: none;
+        cursor: pointer;
+        position: relative;
+        transition: var(--transition);
+    }
+
+    .remember-check input[type="checkbox"]:checked {
+        background-color: var(--primary-color);
+    }
+
+    .remember-check input[type="checkbox"]:checked::before {
+        content: '\2713';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: var(--white);
+        font-weight: bold;
+    }
+
+    /* Button Styling */
+    .login-btn {
+        width: 100%;
+        padding: 0.875rem;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-light) 100%);
+        color: var(--white);
+        border: none;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .login-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    /* Footer */
+    .login-footer {
+        background-color: #f8f9fa;
+        text-align: center;
+        padding: 1.5rem;
+        border-top: 1px solid #e9ecef;
+    }
+
+    .login-footer a {
+        color: var(--primary-color);
+        font-weight: 600;
+        transition: var(--transition);
+    }
+
+    .login-footer a:hover {
+        text-decoration: underline;
+    }
+
+    /* Forgot Password Link */
+    .forgot-password {
+        text-align: right;
+        margin-bottom: 1rem;
+    }
+
+    .forgot-password a {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        transition: var(--transition);
+    }
+
+    .forgot-password a:hover {
+        color: var(--primary-color);
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="login-header">
+        <h3>Sign In to EarnSync</h3>
+    </div>
+    
+    <div class="login-body">
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="{{ form.username.id_for_label }}" class="form-label">Email</label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                    <div class="error-message">
+                        {% for error in form.username.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.password.id_for_label }}" class="form-label">Password</label>
+                {{ form.password }}
+                {% if form.password.errors %}
+                    <div class="error-message">
+                        {% for error in form.password.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+
+            
+            {% if form.remember_me %}
+                <div class="remember-check">
+                    {{ form.remember_me }}
+                    <label for="{{ form.remember_me.id_for_label }}">
+                        Remember me
+                    </label>
+                </div>
+            {% endif %}
+            
+            <button type="submit" class="login-btn">Sign In</button>
+        </form>
+    </div>
+    
+    <div class="login-footer">
+        <p>
+            Don't have an account? <a href="{% url 'register' %}">Sign Up</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

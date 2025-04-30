@@ -1,0 +1,869 @@
+{% extends 'base2.html' %}
+
+{% block title %}{{ job.title }} | Project Details{% endblock %}
+
+{% block extra_css %}
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f2f4f8;
+      color: #333;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    .section {
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      padding: 30px;
+      margin-bottom: 40px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .header-left {
+      max-width: 70%;
+    }
+
+    .header h1 {
+      font-size: 2rem;
+      margin: 0;
+      color: #1e293b;
+    }
+
+    .status-badge {
+      padding: 6px 14px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: white;
+      border-radius: 20px;
+      text-transform: capitalize;
+    }
+
+    .badge-draft { background: #6c757d; }
+    .badge-open { background: #fd7e14; }
+    .badge-in_progress { background: #0d6efd; }
+    .badge-completed { background: #28a745; }
+    .badge-cancelled { background: #dc3545; }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .detail-item {
+      margin-bottom: 10px;
+    }
+
+    .detail-item strong {
+      color: #555;
+    }
+
+    .skills {
+      margin-top: 15px;
+    }
+
+    .skill-tag {
+      display: inline-block;
+      background: #dbeafe;
+      color: #1d4ed8;
+      padding: 6px 12px;
+      border-radius: 14px;
+      font-size: 1rem;
+      margin: 10px 5px 0 0;
+    }
+
+    .progress-container {
+      margin-top: 15px;
+      background: #e9ecef;
+      height: 20px;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background-color: #ffc107;
+    }
+
+    .dispute-section {
+      margin-top: 20px;
+    }
+
+    .dispute-btn {
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      margin-top: 20px;
+    }
+
+    .dispute-btn:hover {
+      background-color: #c82333;
+    }
+
+    .apply-section {
+      margin-top: 30px;
+    }
+
+    .apply-btn {
+      background-color: #0d6efd;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .apply-btn:hover {
+      background-color: #0b5ed7;
+    }
+
+    .table-container {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      padding: 12px 16px;
+      border-bottom: 1px solid #e2e8f0;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f8fafc;
+      font-weight: 600;
+    }
+
+    tr:hover {
+      background-color: #f1f5f9;
+    }
+
+    button {
+      padding: 6px 12px;
+      background-color: #0d6efd;
+      border: none;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0b5ed7;
+    }
+
+    .no-data {
+      font-style: italic;
+      color: #6c757d;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .field-row {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .field {
+      flex: 1;
+      min-width: 280px;
+      background-color: #f9fafb;
+      padding: 14px 18px;
+      border-radius: 10px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .field .label {
+      font-weight: 600;
+      color: #6b7280;
+      font-size: 0.9rem;
+      margin-bottom: 4px;
+    }
+
+    .field .value {
+      font-size: 1rem;
+      color: #111827;
+    }
+
+    .field .cover-letter {
+      white-space: pre-wrap;
+      background: #fffefc;
+      border-left: 4px solid #fbbf24;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+
+    .popup {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000; 
+        /* visibility: hidden; */
+    }
+
+    .bgOverlay {
+        position: absolute;
+        inset: 0;
+        background: #030615;
+        opacity: 0.6;
+    }
+
+    .popupContent {
+      position: relative;
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      width: 500px;
+      max-width: 95%;
+      z-index: 1001;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      animation: fadeIn 0.3s ease-in-out;
+  }
+
+  .popupContent h2 {
+      font-size: 24px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 20px;
+      text-align: center;
+  }
+
+  /* Form Fields */
+  .popupContent form .form-group {
+      margin-bottom: 16px;
+  }
+
+  .popupContent form label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+      color: #444;
+  }
+
+  .popupContent form input[type="text"],
+  .popupContent form input[type="number"],
+  .popupContent form input[type="file"],
+  .popupContent form textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 15px;
+      background: #f9f9f9;
+      transition: border-color 0.3s ease;
+  }
+
+  .popupContent form input:focus,
+  .popupContent form textarea:focus {
+      border-color: #0d6efd;
+      outline: none;
+      background: #fff;
+  }
+
+  /* Submit Button */
+  .popupContent form button {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      background-color: #0d6efd;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+  }
+
+  .popupContent form button:hover {
+      background-color: #0b5ed7;
+  }
+    @media (max-width: 1024px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+
+      .header-left {
+        max-width: 100%;
+      }
+
+      .detail-item {
+        margin-left: 0 !important;
+      }
+
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+      }
+
+      .cover-letter-header{
+        display: none !important;
+      }
+
+      .cover-letter-cell{
+        display: none !important;
+      }
+
+      .field-row {
+        flex-direction: column;
+      }
+
+      .apply-btn,
+      .dispute-btn {
+        width: 100%;
+        text-align: center;
+      }
+
+      table {
+        font-size: 0.9rem;
+      }
+    }
+
+
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 0 15px;
+      }
+
+      .section {
+        padding: 20px;
+      }
+
+      .skill-tag {
+        font-size: 0.9rem;
+        padding: 5px 10px;
+      }
+
+      .field {
+        padding: 12px 14px;
+      }
+
+      .cover-letter {
+        font-size: 0.9rem;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      th, td {
+        padding: 10px 12px;
+      }
+
+      .status-badge {
+        font-size: 0.75rem;
+        padding: 5px 10px;
+      }
+
+      .progress-container {
+        height: 16px;
+      }
+
+      .progress-bar {
+        background-color: #ffc107;
+      }
+    }
+
+    /* Base table styles */
+    .responsive-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .responsive-table th,
+    .responsive-table td {
+      border: 1px solid #ccc;
+      padding: 0.75rem;
+      text-align: left;
+    }
+
+    /* Card-style table for ≤ 768px */
+    @media screen and (max-width: 980px) {
+      .responsive-table,
+      .responsive-table thead,
+      .responsive-table tbody,
+      .responsive-table tr,
+      .responsive-table td {
+        display: block;
+        width: 100%;
+      }
+
+      .responsive-table thead {
+        display: none; /* Hide headers */
+      }
+
+      .responsive-table tr {
+        margin-bottom: 1rem;
+        border: 1px solid #ddd;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        box-shadow: 0 0 5px rgba(0,0,0,0.05);
+      }
+
+      .responsive-table td {
+        position: relative;
+        padding-left: 50%;
+        text-align: right;
+        border: none;
+        border-bottom: 1px solid #eee;
+      }
+
+      .responsive-table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 1rem;
+        top: 0.75rem;
+        font-weight: bold;
+        color: #333;
+      }
+
+      .responsive-table td button{
+        width: 50%;
+      }
+
+      /* Hide Cover Letter column at ≤ 768px */
+      .cover-letter-header,
+      .cover-letter-cell {
+        display: none !important;
+      }
+    }
+
+    /* Responsiveness of Project Header on Small Mobile Screens */
+    @media (max-width: 380px) {
+      .header h1 {
+        font-size: 1.5rem;
+      }
+
+      .header-left {
+        max-width: 100%;
+      }
+
+      .header-left h1 {
+        font-size: 1.5rem;
+      }
+
+      .header-left p {
+        font-size: 0.9rem;
+      }
+
+      .detail-item {
+        margin-left: 0 !important;
+        width: 85%;
+      }
+      .detail-item strong {
+        font-size: 0.9rem;
+      }
+
+      .container{
+        padding: 0;
+      }
+    }
+
+  </style>
+{% endblock %}
+  
+{% block content %}
+  <!-- <body> -->
+    <div class="container">
+
+      <!-- Project Header -->
+      <div class="section">
+        <div class="header">
+          <div class="header-left">
+            <h1>{{ job.title }}</h1>
+            <p><strong>Employer:</strong> {{ job.employer.company_name }}</p>
+          </div>
+          <div>
+            <span class="status-badge badge-{{ job.status }}">{{ job.get_status_display }}</span>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div style="display:flex; flex-direction: column;" class="detail-item"><strong>Description:</strong> {{ job.description }}</div>
+          <div class="detail-item" style="margin-left: 50%;">
+              <br>
+              <strong>Budget:</strong> ${{ job.total_budget }}
+              <br>
+              <br>
+              <strong>Deadline:</strong> {{ job.deadline|date:"d M Y, h:i A" }}
+          </div>
+          <!-- <div class="detail-item"><strong>Deadline:</strong> {{ job.deadline|date:"d M Y, h:i A" }}</div> -->
+        </div>
+
+        {% if skills %}
+        <div class="skills">
+          <strong>Skills Required:</strong><br>
+          {% for skill in skills %}
+            <span class="skill-tag">{{ skill }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <br>
+        <div class="dispute-section">
+          {% if profile.admin_profile %}
+            <a href="{% url 'resolve_dispute' job.id %}" class="dispute-btn">Resolve Dispute</a>
+          
+
+            {% else %}
+            <a href="{% url 'accepted_disputes' job.id %}" class="dispute-btn">Disputes Center</a>
+
+            <a href="{% url 'add_dispute' job.id %}" class="dispute-btn">Submit a Dispute</a>
+          {% endif %}
+        </div>
+
+        {% if profile.freelancer_profile %}
+          {% if not my_application %}
+            <div class="apply-section">
+              <a class="apply-btn">Apply for this Job</a>
+            </div>
+          {% endif %}
+        {% endif %}
+
+        <br>      
+        <!-- <strong>Progress:</strong> -->
+        <div class="progress-container">
+          <div class="progress-bar" style="width: {{ job.Progress }}%;"></div>
+        </div>
+      </div>
+
+      {% if profile.freelancer_profile %}
+        <div class="section">
+          <h3>My Application</h3>
+          {% if my_application %}
+            <div class="field-group">
+
+              <div class="field-row">
+                <div class="field">
+                  <div class="label">Freelancer</div>
+                  <div class="value">{{ my_application.freelancer.user.get_full_name }}</div>
+                </div>
+                <div class="field">
+                  <div class="label">Job Title</div>
+                  <div class="value">{{ my_application.job.title }}</div>
+                </div>
+              </div>
+    
+              <div class="field-row">
+                <div class="field">
+                  <div class="label">Proposed Rate</div>
+                  <div class="value">${{ my_application.proposed_rate }}</div>
+                </div>
+                <div class="field">
+                  <div class="label">Status</div>
+                  <div class="value">{{ my_application.get_status_display }}</div>
+                </div>
+              </div>
+    
+              <div class="field-row">
+                <div class="field">
+                  <div class="label">Applied At</div>
+                  <div class="value">{{ my_application.applied_at|date:"d M Y, h:i A" }}</div>
+                </div>
+                <div class="field">
+                  <div class="label">Last Updated</div>
+                  <div class="value">{{ my_application.updated_at|date:"d M Y, h:i A" }}</div>
+                </div>
+              </div>
+    
+              <div class="field">
+                <div class="label">Cover Letter</div>
+                <div class="cover-letter">
+                  {{ my_application.cover_letter|default:"(No cover letter)" }}
+                </div>
+              </div>
+    
+            </div>
+          {% else %}
+            <p class="no-data">You have not applied for this job yet.</p>
+          {% endif %}
+
+          {% if my_application and my_application.status == 'accepted' %}
+            <!-- Milestones -->
+            <div class="section">
+              <h3>Milestones</h3>
+              {% if milestones %}
+              <div class="table-container">
+                <table class="responsive-table">
+                  <thead>
+                    <tr>
+                      <th>Title</th>
+                      <th>Status</th>
+                      <th>Budget</th>
+                      <th>Start</th>
+                      <th>Due</th>
+                      <th>Completed</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for ms in milestones %}
+                    <tr>
+                      <td data-label="Title">{{ ms.title }}</td>
+                      <td data-label="Status">{{ ms.get_status_display }}</td>
+                      <td data-label="Budget">${{ ms.budget }}</td>
+                      <td data-label="Start">{{ ms.start_date|date:"d M Y" }}</td>
+                      <td data-label="Due">{{ ms.expected_end_date|date:"d M Y" }}</td>
+                      <td data-label="Completed">{{ ms.completed_date|default:"-" }}</td>
+                      <td data-label="Action">
+                        <a href="{% url 'milestone_detail' ms.id %}"><button>View</button></a>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              {% else %}
+                <p class="no-data">No milestones defined yet.</p>
+              {% endif %}
+            </div>
+
+            <!-- Payments -->
+            <div class="section">
+              <h3>Payments</h3>
+              {% if payments %}
+              <div class="table-container">
+                <table class="responsive-table">
+                  <thead>
+                    <tr>
+                      <th>Milestone</th>
+                      <th>Freelancer</th>
+                      <th>Amount</th>
+                      <th>Status</th>
+                      <th>Transaction ID</th>
+                      <th>Paid At</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for pay in payments %}
+                    <tr>
+                      <td data-label="Milestone">{{ pay.milestone.title }}</td>
+                      <td data-label="Freelancer">{{ pay.freelancer.user.get_full_name }}</td>
+                      <td data-label="Amount">${{ pay.amount }}</td>
+                      <td data-label="Status">{{ pay.get_status_display }}</td>
+                      <td data-label="Transaction ID">{{ pay.transaction_id }}</td>
+                      <td data-label="Paid At">{{ pay.paid_at|date:"d M Y"|default:"-" }}</td>
+                      <td data-label="Action">
+                        <a href="{% url 'payment_detail' pay.id %}"><button>View</button></a>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              {% else %}
+                <p class="no-data">No payments made yet.</p>
+              {% endif %}
+            </div>
+          {% endif %}
+        </div>
+      {% else %}
+        <!-- Applications -->
+        <div class="section">
+          <h3>Applications</h3>
+          {% if applications %}
+          <div class="table-container">
+            <table class="responsive-table">
+              <thead>
+                <tr>
+                  <th>Freelancer</th>
+                  <th>Rate</th>
+                  <th>Status</th>
+                  <th class="cover-letter-header">Cover Letter</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for app in applications %}
+                <tr>
+                  <td data-label="Freelancer">{{ app.freelancer.user.get_full_name }}</td>
+                  <td data-label="Rate">${{ app.proposed_rate }}</td>
+                  <td data-label="Status">{{ app.get_status_display }}</td>
+                  <td data-label="Cover Letter" class="cover-letter-cell">{{ app.cover_letter|default:"(No cover letter)" }}</td>
+                  <td data-label="Action">
+                    <a href="{% url 'application_detail' app.id %}"><button>View</button></a>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+            <p class="no-data">No applications yet.</p>
+          {% endif %}
+        </div>
+
+        <!-- Milestones -->
+        <div class="section">
+          <h3>Milestones</h3>
+          {% if milestones %}
+          <div class="table-container">
+            <table class="responsive-table">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Status</th>
+                  <th>Budget</th>
+                  <th>Start</th>
+                  <th>Due</th>
+                  <th>Completed</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for ms in milestones %}
+                <tr>
+                  <td data-label="Title">{{ ms.title }}</td>
+                  <td data-label="Status">{{ ms.get_status_display }}</td>
+                  <td data-label="Budget">${{ ms.budget }}</td>
+                  <td data-label="Start">{{ ms.start_date|date:"d M Y" }}</td>
+                  <td data-label="Due">{{ ms.expected_end_date|date:"d M Y" }}</td>
+                  <td data-label="Completed">{{ ms.completed_date|default:"-" }}</td>
+                  <td data-label="Action">
+                    <a href="{% url 'milestone_detail' ms.id %}"><button>View</button></a>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+            <p class="no-data">No milestones defined yet.</p>
+          {% endif %}
+        </div>
+
+        <!-- Payments -->
+        <div class="section">
+          <h3>Payments</h3>
+          {% if payments %}
+          <div class="table-container">
+            <table class="responsive-table">
+              <thead>
+                <tr>
+                  <th>Milestone</th>
+                  <th>Freelancer</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th>Transaction ID</th>
+                  <th>Paid At</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for pay in payments %}
+                <tr>
+                  <td data-label="Milestone">{{ pay.milestone.title }}</td>
+                  <td data-label="Freelancer">{{ pay.freelancer.user.get_full_name }}</td>
+                  <td data-label="Amount">${{ pay.amount }}</td>
+                  <td data-label="Status">{{ pay.get_status_display }}</td>
+                  <td data-label="Transaction ID">{{ pay.transaction_id }}</td>
+                  <td data-label="Paid At">{{ pay.paid_at|date:"d M Y"|default:"-" }}</td>
+                  <td data-label="Action">
+                    <a href="{% url 'payment_detail' pay.id %}"><button>View</button></a>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+            <p class="no-data">No payments made yet.</p>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+  <!-- </body> -->
+
+  <div class="popup" id="popup">
+    <div class="bgOverlay"></div>
+    <div class="popupContent">
+      <h2>Apply for {{ job.title }}</h2>
+
+        <form method="post" action="{% url 'submit_job_application' job.id %}" enctype="multipart/form-data">      
+          {% csrf_token %}
+          <div class="form-group mb-3">
+              <label for="cover_letter">Cover Letter / Proposal</label>
+              <textarea name="cover_letter" id="cover_letter" class="form-control" rows="5" placeholder="Explain why you're the right fit..."></textarea>
+          </div>
+      
+          <div class="form-group mb-3">
+              <label for="bid_amount">Your Bid (USD)</label>
+              <input type="number" name="bid_amount" id="bid_amount" class="form-control" placeholder="Enter your proposed amount" step="0.01" min="0">
+          </div>
+      
+          <div class="form-group mb-3">
+              <label for="time_estimate">Estimated Time to Complete (days)</label>
+              <input type="number" name="time_estimate" id="time_estimate" class="form-control" min="1" placeholder="E.g., 10">
+          </div>
+      
+          <button type="submit" class="btn btn-primary w-100">Submit Application</button>
+      </form>
+
+
+
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      document.querySelectorAll(".apply-btn").forEach(button => {
+          button.addEventListener("click", function () {
+              document.getElementById("popup").style.display = 'flex';
+          });
+      });
+
+      document.querySelector(".bgOverlay").addEventListener("click", function () {
+          document.getElementById("popup").style.display = 'none';
+      });
+
+      document.getElementById("popup-close").addEventListener("click", function () {
+          document.getElementById("popup").style.display = 'none';
+      });
+    })
+  </script>
+{% endblock %}

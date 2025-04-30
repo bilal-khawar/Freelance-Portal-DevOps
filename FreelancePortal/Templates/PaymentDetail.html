@@ -1,0 +1,190 @@
+{% extends 'base2.html' %}
+{% block title %}Payment Details{% endblock %}
+
+{% block extra_css %}
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #eef1f4;
+      margin: 0;
+      color: #333;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 860px;
+      margin: auto;
+    }
+
+    .card {
+      background-color: #ffffff;
+      padding: 32px;
+      border-radius: 18px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s ease;
+    }
+
+    .title-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    h2 {
+      font-size: 2rem;
+      color: #1e293b;
+      text-align: center;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .field-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .field {
+      background-color: #f9fafb;
+      padding: 16px 20px;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      flex: 1 1 100%;
+      transition: all 0.2s ease;
+    }
+
+    .field:hover {
+      border-color: #cbd5e1;
+      background-color: #f1f5f9;
+    }
+
+    .field.half {
+      flex: 1 1 100%;
+    }
+
+    @media (min-width: 600px) {
+      .field.half {
+        flex: 1 1 47%;
+      }
+
+      h2 {
+        font-size: 1.8rem;
+      }
+    }
+
+    .label {
+      font-weight: 600;
+      color: #64748b;
+      font-size: 0.9rem;
+      margin-bottom: 4px;
+    }
+
+    .value {
+      font-size: 1.05rem;
+      color: #0f172a;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-top: 4px;
+    }
+
+    .badge-paid { background: #dcfce7; color: #15803d; }
+    .badge-pending { background: #fef3c7; color: #b45309; }
+    .badge-failed { background: #fee2e2; color: #b91c1c; }
+
+    .footer-note {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #64748b;
+      margin-top: 40px;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  <body>
+    <div class="container">
+      <div class="card">
+        <div class="title-container">
+          <h2>Payment Details</h2>
+        </div>
+
+        <div class="field-group">
+
+          <div class="field-row">
+            <div class="field half">
+              <div class="label">Milestone</div>
+              <div class="value">{{ payment.milestone.title }}</div>
+            </div>
+            <div class="field half">
+              <div class="label">Freelancer</div>
+              <div class="value">{{ payment.freelancer.user.get_full_name }}</div>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field half">
+              <div class="label">Amount</div>
+              <div class="value">${{ payment.amount }}</div>
+            </div>
+            <div class="field half">
+              <div class="label">Status</div>
+              <div class="value">
+                {% if payment.get_status_display == 'Paid' %}
+                  <span class="badge badge-paid">Paid</span>
+                {% elif payment.get_status_display == 'Pending' %}
+                  <span class="badge badge-pending">Pending</span>
+                {% elif payment.get_status_display == 'Failed' %}
+                  <span class="badge badge-failed">Failed</span>
+                {% else %}
+                  {{ payment.get_status_display }}
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="label">Transaction ID</div>
+            <div class="value">{{ payment.transaction_id }}</div>
+          </div>
+
+          <div class="field">
+            <div class="label">Payment Method</div>
+            <div class="value">{{ payment.payment_method|default:"-" }}</div>
+          </div>
+
+          <div class="field-row">
+            <div class="field half">
+              <div class="label">Created At</div>
+              <div class="value">{{ payment.created_at|date:"d M Y, h:i A" }}</div>
+            </div>
+            <div class="field half">
+              <div class="label">Updated At</div>
+              <div class="value">{{ payment.updated_at|date:"d M Y, h:i A" }}</div>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="label">Paid At</div>
+            <div class="value">{{ payment.paid_at|default:"Not yet paid" }}</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </body>
+{% endblock %}

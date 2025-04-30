@@ -1,0 +1,427 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Welcome to EarnSync{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Advanced Color Palette */
+    :root {
+        --primary-color: #4a6fdc;
+        --primary-color-light: #6c8ff2;
+        --primary-color-dark: #3a5adc;
+        --secondary-color: #6c757d;
+        --accent-color: #28a745;
+        --text-primary: #333333;
+        --text-secondary: #6c757d;
+        --background-light: #f8f9fa;
+        --white: #ffffff;
+        --border-radius: 12px;
+        --box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Global Resets and Utilities */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        line-height: 1.6;
+        color: var(--text-primary);
+        scroll-behavior: smooth;
+    }
+
+    /* Hero Section with Advanced Styling */
+    .hero-section {
+        position: relative;
+        background: var(--primary-color);
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-light) 100%);
+        color: var(--white);
+        overflow: hidden;
+        padding: 8rem 2rem;
+        text-align: center;
+    }
+
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: 
+            radial-gradient(circle at top left, rgba(255,255,255,0.2) 0%, transparent 20%),
+            radial-gradient(circle at bottom right, rgba(255,255,255,0.2) 0%, transparent 20%);
+        pointer-events: none;
+    }
+
+    .hero-content {
+        position: relative;
+        max-width: 800px;
+        margin: 0 auto;
+        z-index: 1;
+    }
+
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        line-height: 1.2;
+        letter-spacing: -0.05em;
+    }
+
+    .hero-subtitle {
+        font-size: 1.25rem;
+        color: rgba(255,255,255,0.85);
+        max-width: 600px;
+        margin: 0 auto 2.5rem;
+    }
+
+    .hero-cta {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .hero-cta a {
+        text-decoration: none;
+        padding: 0.875rem 2rem;
+        border-radius: var(--border-radius);
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    .hero-cta .btn-light {
+        background-color: var(--white);
+        color: var(--primary-color);
+    }
+
+    .hero-cta .btn-outline-light {
+        background-color: transparent;
+        color: var(--white);
+        border: 2px solid var(--white);
+    }
+
+    .hero-cta a:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+    }
+
+    /* Features Section */
+    .features-section {
+        padding: 6rem 2rem;
+        background-color: var(--background-light);
+    }
+
+    .features-container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .feature-card {
+        background-color: var(--white);
+        padding: 2.5rem;
+        border-radius: var(--border-radius);
+        text-align: center;
+        transition: all 0.4s ease;
+        box-shadow: var(--box-shadow);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .feature-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: var(--primary-color);
+        transform: scaleX(0);
+        transform-origin: right;
+        transition: transform 0.4s ease;
+    }
+
+    .feature-card:hover::before {
+        transform: scaleX(1);
+        transform-origin: left;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+    }
+
+    .feature-icon {
+        font-size: 3.5rem;
+        margin-bottom: 1.5rem;
+        color: var(--primary-color);
+        transition: transform 0.3s ease;
+    }
+
+    .feature-card:hover .feature-icon {
+        transform: rotate(15deg);
+    }
+
+    .feature-title {
+        margin-bottom: 1rem;
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+
+    .feature-description {
+        color: var(--text-secondary);
+    }
+
+    /* How It Works Section */
+    .how-it-works-section {
+        padding: 6rem 2rem;
+        background-color: var(--white);
+    }
+
+    .how-it-works-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+        max-width: 1200px;
+        margin: 0 auto;
+        align-items: center;
+    }
+
+    .how-it-works-image img {
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        transition: transform 0.4s ease;
+    }
+
+    .how-it-works-image img:hover {
+        transform: scale(1.02);
+    }
+
+    .how-it-works-step {
+        display: flex;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        background-color: var(--background-light);
+        border-radius: var(--border-radius);
+        transition: all 0.3s ease;
+    }
+
+    .how-it-works-step:hover {
+        transform: translateX(10px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .how-it-works-step-icon {
+        margin-right: 1.5rem;
+        color: var(--primary-color);
+        font-size: 2.5rem;
+        flex-shrink: 0;
+    }
+
+    .how-it-works-step-content h5 {
+        margin-bottom: 0.5rem;
+        font-weight: 700;
+    }
+
+    /* Testimonials Section */
+    .testimonials-section {
+        padding: 6rem 2rem;
+        background-color: var(--background-light);
+    }
+
+    .testimonials-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .testimonial-card {
+        background-color: var(--white);
+        padding: 2.5rem;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        border-left: 5px solid var(--primary-color);
+        transition: all 0.4s ease;
+    }
+
+    .testimonial-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+    }
+
+    .testimonial-text {
+        font-style: italic;
+        margin-bottom: 1.5rem;
+        color: var(--text-secondary);
+    }
+
+    .testimonial-author {
+        display: flex;
+        align-items: center;
+    }
+
+    .testimonial-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background-color: var(--primary-color);
+        color: var(--white);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1.5rem;
+        font-weight: 700;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+        .features-container,
+        .how-it-works-container,
+        .testimonials-container {
+            grid-template-columns: 1fr;
+        }
+
+        .hero-title {
+            font-size: 2.5rem;
+        }
+
+        .hero-cta {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .hero-cta a {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="hero-content">
+        <h1 class="hero-title">Connect with Top Software Engineering Talent</h1>
+        <p class="hero-subtitle">Find expert developers for your projects or showcase your skills to potential clients.</p>
+        <div class="hero-cta">
+            {% if user.is_authenticated %}
+                <a href="{% url 'dashboard' %}" class="btn-light">Go to Dashboard</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn-light">Log In</a>
+                <a href="{% url 'register' %}" class="btn-outline-light">Sign Up</a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section">
+    <div class="container">
+        <h2 class="text-center mb-5">Why Choose Our Platform?</h2>
+        <div class="features-container">
+            <div class="feature-card">
+                <i class="fas fa-laptop-code feature-icon"></i>
+                <h3 class="feature-title">Specialized Talent</h3>
+                <p class="feature-description">Connect with software engineers specializing in web development, mobile apps, AI, and more.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-shield-alt feature-icon"></i>
+                <h3 class="feature-title">Secure Payments</h3>
+                <p class="feature-description">Our escrow system ensures you only pay for completed work that meets your requirements.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-chart-line feature-icon"></i>
+                <h3 class="feature-title">Career Growth</h3>
+                <p class="feature-description">Build your portfolio, gain experience, and grow your professional network.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works -->
+<section class="how-it-works-section">
+    <div class="how-it-works-container">
+        {% comment %} <div class="how-it-works-image">
+            <img src="{% static 'images/how-it-works.svg' %}" alt="How it works" onerror="this.src='https://via.placeholder.com/600x400?text=How+It+Works';this.onerror='';">
+        </div> {% endcomment %}
+        <div class="how-it-works-steps">
+            <div class="how-it-works-step">
+                <div class="how-it-works-step-icon">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <div class="how-it-works-step-content">
+                    <h5>1. Create your account</h5>
+                    <p>Sign up as a client or freelancer and complete your profile.</p>
+                </div>
+            </div>
+            <div class="how-it-works-step">
+                <div class="how-it-works-step-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="how-it-works-step-content">
+                    <h5>2. Post a job or browse projects</h5>
+                    <p>Clients post detailed project requirements, freelancers browse available jobs.</p>
+                </div>
+            </div>
+            <div class="how-it-works-step">
+                <div class="how-it-works-step-icon">
+                    <i class="fas fa-handshake"></i>
+                </div>
+                <div class="how-it-works-step-content">
+                    <h5>3. Collaborate effectively</h5>
+                    <p>Use our integrated tools to communicate, share files, and track progress.</p>
+                </div>
+            </div>
+            <div class="how-it-works-step">
+                <div class="how-it-works-step-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="how-it-works-step-content">
+                    <h5>4. Complete project & payment</h5>
+                    <p>Approve completed work and release payment. Leave reviews to build reputation.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials -->
+<section class="testimonials-section">
+    <div class="container">
+        <h2 class="text-center mb-5">What Our Users Say</h2>
+        <div class="testimonials-container">
+            <div class="testimonial-card">
+                <p class="testimonial-text">"I found the perfect developer for my startup's web application. The quality of talent on this platform is outstanding."</p>
+                <div class="testimonial-author">
+                    <div class="testimonial-avatar">JD</div>
+                    <div class="testimonial-author-info">
+                        <h5>John Doe</h5>
+                        <p>Tech Startup Founder</p>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <p class="testimonial-text">"As a freelance developer, this platform has connected me with interesting projects that have helped me grow professionally."</p>
+                <div class="testimonial-author">
+                    <div class="testimonial-avatar">JS</div>
+                    <div class="testimonial-author-info">
+                        <h5>Jane Smith</h5>
+                        <p>Full Stack Developer</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
