@@ -17,6 +17,7 @@ DEBUG = True
 
 # Strict host validation
 ALLOWED_HOSTS = [
+    'freelance.local',
     '127.0.0.1', 
     'localhost', 
     'https://software-engineering-freelancer-portal.vercel.app/',

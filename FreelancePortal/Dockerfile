@@ -28,4 +28,4 @@ COPY . .
 RUN python manage.py collectstatic --noinput
 
 # Set the entrypoint to gunicorn
-CMD ["gunicorn", "FreelancePortal.wsgi:application", "--bind", "0.0.0.0:8000"]
+CMD ["gunicorn", "FreelancePortal.wsgi:application", "--bind", "0.0.0.0:8000", "--timeout", "120"]
