@@ -31,7 +31,6 @@ jobs:
           docker build -f FreelancePortal/Dockerfile -t 22i0786/freelance-portal:latest FreelancePortal
           docker push 22i0786/freelance-portal:latest
 
-
       - name: Set up kubectl
         uses: azure/setup-kubectl@v3
         with:
@@ -39,16 +38,37 @@ jobs:
 
       - name: Configure Kubeconfig
         run: |
-          echo "${{ secrets.KUBECONFIG_DATA }}" | base64 -d > kubeconfig.yaml
+          mkdir -p $HOME/.kube/
+          echo "${{ secrets.KUBECONFIG_DATA }}" | base64 -d > $HOME/.kube/config
+          chmod 600 $HOME/.kube/config
         env:
           KUBECONFIG_DATA: ${{ secrets.KUBECONFIG_DATA }}
 
+      - name: Verify Kubernetes connection
+        run: |
+          kubectl config view --minify
+          kubectl cluster-info
+          kubectl get nodes
+
       - name: Deploy to Kubernetes
         run: |
-          kubectl --kubeconfig=kubeconfig.yaml apply -f kubernetes/namespace.yaml
-          kubectl --kubeconfig=kubeconfig.yaml apply -f kubernetes/secrets.yaml
-          kubectl --kubeconfig=kubeconfig.yaml apply -f kubernetes/configmap.yaml
-          kubectl --kubeconfig=kubeconfig.yaml apply -f kubernetes/deployment.yaml
-          kubectl --kubeconfig=kubeconfig.yaml apply -f kubernetes/service.yaml
-          kubectl --kubeconfig=kubeconfig.yaml apply -f kubernetes/ingress.yaml
-
+          # Apply namespace first (with validation disabled if needed)
+          kubectl apply -f kubernetes/namespace.yaml --validate=false || echo "Namespace may already exist, continuing..."
+          
+          # Apply other resources with namespace explicitly specified
+          NAMESPACE=$(grep -o 'name: [a-zA-Z0-9-]*' kubernetes/namespace.yaml | cut -d' ' -f2)
+          echo "Using namespace: $NAMESPACE"
+          
+          # Apply remaining resources with explicit namespace
+          kubectl apply -f kubernetes/configmap.yaml -n $NAMESPACE
+          kubectl apply -f kubernetes/secrets.yaml -n $NAMESPACE
+          kubectl apply -f kubernetes/deployment.yaml -n $NAMESPACE
+          kubectl apply -f kubernetes/service.yaml -n $NAMESPACE
+          
+          # Apply ingress if it exists
+          if [ -f kubernetes/ingress.yaml ]; then
+            kubectl apply -f kubernetes/ingress.yaml -n $NAMESPACE
+          fi
+          
+          # Wait for deployment to be ready
+          kubectl rollout status deployment/freelance-portal -n $NAMESPACE --timeout=180s
