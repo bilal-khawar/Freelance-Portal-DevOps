@@ -28,8 +28,8 @@ jobs:
 
       - name: Build and Push Docker Image
         run: |
-          docker build -f FreelancePortal/Dockerfile -t your-dockerhub-username/freelance-portal:latest FreelancePortal
-          docker push your-dockerhub-username/freelance-portal:latest
+          docker build -f FreelancePortal/Dockerfile -t 22i0786/freelance-portal:latest FreelancePortal
+          docker push 22i0786/freelance-portal:latest
 
 
       - name: Set up kubectl
