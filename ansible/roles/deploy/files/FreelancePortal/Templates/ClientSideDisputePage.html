@@ -1,0 +1,151 @@
+{% extends 'base2.html' %}
+{% block title %}Accepted Disputes{% endblock %}
+
+{% block extra_css %}
+<style>
+  body {
+    background-color: #f4f6f9;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  .container {
+    max-width: 1000px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+  }
+  .dispute-card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+  }
+  .card-header {
+    background: #17a2b8;
+    color: #fff;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .card-body {
+    padding: 1rem;
+  }
+  .badge-in-progress {
+    background-color: #17a2b8;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+  }
+  .actions {
+    margin-top: 0.75rem;
+  }
+  .actions button {
+    margin-right: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+  }
+  .btn-toggle { background: #28a745; }
+  .btn-toggle:hover { background: #218838; }
+  .message-box {
+    display: none;
+    background: #fafafa;
+    border-top: 1px solid #ddd;
+    padding: 1rem;
+  }
+  .message {
+    margin-bottom: 0.75rem;
+  }
+  .message strong {
+    display: block;
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+  }
+  .new-message {
+    margin-top: 1rem;
+  }
+  .new-message textarea {
+    width: 100%;
+    height: 4rem;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: vertical;
+  }
+  .new-message button {
+    margin-top: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: #007bff;
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h1>Accepted Disputes</h1>
+  {% if accepted_disputes %}
+    {% for dispute in accepted_disputes %}
+      <div class="dispute-card" id="dispute-{{ dispute.id }}">
+        <div class="card-header">
+          <div>
+            <h3>{{ dispute.title }}</h3>
+            <small>Job: {{ dispute.dispute_application.job.title }}</small>
+          </div>
+          <span class="badge-in-progress">{{ dispute.status|title }}</span>
+        </div>
+        <div class="card-body">
+          <p><strong>Submitted by:</strong> {{ dispute.dispute_application.applicant.email }}</p>
+          <p><strong>On:</strong> {{ dispute.created_at|date:"M d, Y H:i" }}</p>
+
+          <div class="actions">
+            <button class="btn-toggle" onclick="toggleMessages({{ dispute.id }})">
+              View / Send Messages
+            </button>
+          </div>
+
+          <div class="message-box" id="messages-{{ dispute.id }}">
+            <h4>Conversation</h4>
+            {% for msg in dispute.messages.all %}
+              <div class="message">
+                <strong>
+                  {{ msg.sender.first_name }} {{ msg.sender.last_name }} 
+                  <small>({{ msg.sent_at|date:"M d, Y H:i" }})</small>
+                </strong>
+                {{ msg.content }}
+              </div>
+            {% empty %}
+              <p>No messages yet.</p>
+            {% endfor %}
+
+            <div class="new-message">
+              <form method="POST" action="{% url 'send_message_client' dispute.id %}">
+                {% csrf_token %}
+                <textarea name="content" placeholder="Type your message..." required></textarea>
+                <button type="submit">Send</button>
+              </form>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>No accepted disputes to display.</p>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function toggleMessages(id) {
+    const box = document.getElementById('messages-' + id);
+    box.style.display = (box.style.display === 'block' ? 'none' : 'block');
+  }
+</script>
+{% endblock %}

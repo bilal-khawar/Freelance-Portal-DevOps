@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Django Template Test</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'CSS/Test.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">Django Template Test</h1>
+        <div class="status-card success">
+            <h2>Template System</h2>
+            <p>✅ If you can see this, your Django templates are working correctly!</p>
+        </div>
+        <div class="status-card info">
+            <h2>Static Files</h2>
+            <p>If this text has styling (blue background, rounded corners, etc.), your static files are loading correctly!</p>
+        </div>
+        <div class="django-info">
+            <p>You're using Django {{ django_version }}</p>
+        </div>
+    </div>
+</body>
+</html>

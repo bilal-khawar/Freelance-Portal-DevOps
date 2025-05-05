@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Milestone Details</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7fc;
+        }
+        .container {
+            width: 80%;
+            margin: 2rem auto;
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            text-align: center;
+            color: #333;
+        }
+        .milestone-details, .submitted-submissions, .new-submission {
+            margin-bottom: 2rem;
+        }
+        .milestone-details {
+            background-color: #f9f9f9;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        .milestone-details p {
+            font-size: 1.1rem;
+            margin: 0.5rem 0;
+            color: #555;
+        }
+        .submitted-submissions ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .submitted-submissions li {
+            background-color: #f9f9f9;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .submitted-submissions li .timestamp {
+            font-size: 0.9rem;
+            color: #888;
+        }
+        .new-submission form {
+            display: flex;
+            flex-direction: column;
+        }
+        .new-submission input, .new-submission textarea, .new-submission button {
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+        .new-submission button {
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .new-submission button:hover {
+            background-color: #4cae4c;
+        }
+
+        .submit-button-container {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .submit-button {
+            padding: 0.8rem 1.5rem;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .submit-button:hover {
+            background-color: #0056b3;
+        }
+
+        .accept-button-container {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .accept-button {
+            padding: 0.8rem 1.5rem;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .accept-button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Milestone Details Section -->
+        <section class="milestone-details">
+            <h2>Milestone Details</h2>
+            <p><strong>Title:</strong> {{ milestone.title }}</p>
+            <p><strong>Description:</strong> {{ milestone.description }}</p>
+            <p><strong>Budget:</strong> ${{ milestone.budget }}</p>
+            <p><strong>Start Date:</strong> {{ milestone.start_date }}</p>
+            <p><strong>Expected End Date:</strong> {{ milestone.end_date }}</p>
+        </section>
+
+        <!-- Submitted Submissions Section -->
+        <section class="submitted-submissions">
+            <h2>Submitted Submissions</h2>
+            <ul>
+                {% for submission in submissions %}
+                <li>
+                    <div class="submission-content">
+                        <p><strong>Submission {{ forloop.counter }}:</strong> {{ submission.paragraph }}</p>
+                        <p class="timestamp">{{ submission.submitted_at }}</p>
+                    </div>
+                </li>
+                {% empty %}
+                    <li>No submissions yet.</li>
+                {% endfor %}
+            </ul>
+        </section>
+
+        <!-- New Submission Form Section -->
+        {% if user.freelancer_profile %}
+        <section class="new-submission">
+            <h2>New Submission</h2>
+            <form method="POST" action="{% url 'submit_submission' milestone.id %}">
+                {% csrf_token %}
+                <textarea name="paragraph" placeholder="Enter your submission..." rows="5"></textarea>
+                <button type="submit">Submit Submission</button>
+            </form>
+        </section>
+        {% endif %}
+
+        <!-- Button to Open Submission Page -->
+        <div class="submit-button-container">
+            <button class="submit-button" onclick="window.location.href='{% url 'milestone_detail' milestone.id %}'">Go to Submission Page</button>
+        </div>
+
+
+        {% if user.employer_profile %}
+        <div class="accept-button-container">
+            <form method="POST" action="{% url 'accept_milestone' milestone.id %}">
+                {% csrf_token %}
+                <button type="submit" class="accept-button">Accept Milestone</button>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

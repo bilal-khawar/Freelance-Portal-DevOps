@@ -1,0 +1,50 @@
+- name: Update apt
+  apt:
+    update_cache: yes
+
+- name: Install Docker
+  apt:
+    name: docker.io
+    state: present
+
+- name: Install pip & Docker Python package
+  apt:
+    name: python3-pip
+    state: present
+
+- name: Install Docker Compose
+  pip:
+    name: docker-compose
+
+- name: Ensure Docker service is running
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: Create app directory
+  file:
+    path: /opt/freelance-portal
+    state: directory
+
+- name: Copy app source code
+  copy:
+    src: FreelancePortal/
+    dest: /opt/freelance-portal/FreelancePortal/
+    mode: 0755
+
+- name: Copy .env file
+  copy:
+    src: .env
+    dest: /opt/freelance-portal/FreelancePortal/.env
+    mode: 0600
+
+- name: Build Docker image
+  command: docker build -t freelance-portal .
+  args:
+    chdir: /opt/freelance-portal/FreelancePortal/
+
+- name: Run Docker container
+  command: docker run -d -p 8000:8000 --env-file .env freelance-portal
+  args:
+    chdir: /opt/freelance-portal/FreelancePortal/

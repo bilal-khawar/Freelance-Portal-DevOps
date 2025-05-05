@@ -1,0 +1,214 @@
+{% extends 'base2.html' %}
+
+{% load static %}
+
+{% block title %}Contracts | EarnSync{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background-color: #f5f6fa;
+    }
+
+    .contract-card {
+        background: #fff;
+        border: 1px solid #ddd;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 10px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        transition: 0.3s ease;
+    }
+
+    .contract-card:hover {
+        box-shadow: 0 5px 16px rgba(0,0,0,0.1);
+    }
+
+    .contract-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        text-transform: capitalize;
+    }
+
+    .status-pending {
+        background-color: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffeeba;
+    }
+
+    .status-accepted {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+    .status-rejected {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+
+    .contract-info p {
+        margin-bottom: 6px;
+        color: #444;
+    }
+
+    .header {
+        text-align: left;
+        margin-bottom: 2rem;
+        padding: 0 1rem;
+    }
+
+    .header h2 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #333;
+    }
+
+    .header p {
+        font-size: 1rem;
+        color: #555;
+        max-width: 600px;
+    }
+
+    @media (max-width: 580px) {
+        .container {
+            padding: 0 1rem;
+        }
+
+        .container h2,
+        .container p {
+            text-align: center;
+        }
+
+        .contract-card {
+            padding: 1rem;
+            margin-bottom: 1.25rem;
+            font-size: 0.95rem;
+        }
+
+        .contract-title {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .contract-info p {
+            font-size: 0.85rem;
+        }
+
+        .status-badge {
+            display: block;
+            margin-top: 1rem;
+            font-size: 0.8rem;
+            text-align: center;
+            width: fit-content;
+        }
+
+        .header {
+            padding: 0 1rem;
+            text-align: center;
+        }
+
+        .header h2 {
+            font-size: 1.6rem;
+        }
+
+        .header p {
+            font-size: 0.9rem;
+            line-height: 1.4;
+            /* margin: 0 auto; */
+        }
+
+    }
+
+    @media (min-width: 581px) and (max-width: 768px) {
+        .header {
+            padding: 0 2rem;
+            text-align: center;
+        }
+
+        .header h2 {
+            font-size: 1.8rem;
+        }
+
+        .header p {
+            font-size: 0.95rem;
+            margin: 0 auto;
+        }
+
+        .container {
+            padding: 0 2rem;
+        }
+
+        .contract-card {
+            padding: 1.25rem 1.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .contract-title {
+            font-size: 1.2rem;
+        }
+
+        .contract-info p {
+            font-size: 0.9rem;
+        }
+
+        .status-badge {
+            font-size: 0.85rem;
+            padding: 5px 10px;
+        }
+    }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="header">
+        <h2 class="mb-4">Contracts</h2>
+        <!-- <p>View, track, and manage all active, pending, and completed contracts in one place.</p> -->
+    </div>
+
+    <!-- Example contract 1 -->
+    <div class="contract-card">
+        <div class="contract-title">Website Redesign Project</div>
+        <div class="contract-info">
+            <p>Client: Acme Corp</p>
+            <p>Budget: $2000</p>
+            <p>Duration: 30 days</p>
+        </div>
+        <span class="status-badge status-pending">Pending</span>
+    </div>
+
+    <!-- Example contract 2 -->
+    <div class="contract-card">
+        <div class="contract-title">Mobile App Development</div>
+        <div class="contract-info">
+            <p>Client: Beta Tech</p>
+            <p>Budget: $5000</p>
+            <p>Duration: 60 days</p>
+        </div>
+        <span class="status-badge status-accepted">Accepted</span>
+    </div>
+
+    <!-- Example contract 3 -->
+    <div class="contract-card">
+        <div class="contract-title">UI/UX Overhaul</div>
+        <div class="contract-info">
+            <p>Client: Designify</p>
+            <p>Budget: $1200</p>
+            <p>Duration: 15 days</p>
+        </div>
+        <span class="status-badge status-rejected">Rejected</span>
+    </div>
+</div>
+{% endblock %}

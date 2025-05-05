@@ -1,0 +1,190 @@
+{% extends 'base2.html' %}
+{% block title %}Resolve Disputes{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background-color: #f4f6f9;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .dispute-container {
+        max-width: 1200px;
+        margin: auto;
+        padding: 20px;
+    }
+    .dispute-header {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    .dispute-card {
+        background: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+        overflow: hidden;
+    }
+    .dispute-card-header {
+        padding: 15px;
+        background-color: #007bff;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .dispute-card-body {
+        padding: 15px;
+    }
+    .badge {
+        padding: 4px 8px;
+        border-radius: 5px;
+        font-size: 0.8rem;
+        color: white;
+    }
+    .badge-pending { background-color: #ffc107; color: black; }
+    .badge-completed { background-color: #28a745; }
+    .badge-in-progress { background-color: #17a2b8; }
+    .badge-cancelled { background-color: #dc3545; }
+    .card-actions {
+        margin-top: 15px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    .action-btn {
+        padding: 8px 14px;
+        border-radius: 5px;
+        text-decoration: none;
+        color: white;
+        cursor: pointer;
+        border: none;
+    }
+    .accept-btn { background-color: #28a745; }
+    .resolve-btn { background-color: #007bff; }
+    .toggle-messages-btn { background-color: #17a2b8; }
+    .message-box {
+        display: none;
+        padding: 15px;
+        border-top: 1px solid #ddd;
+        background-color: #fafafa;
+    }
+    .message {
+        margin-bottom: 10px;
+        padding: 10px;
+        border-radius: 5px;
+    }
+    .message.user { background-color: #e9f7ef; }
+    .message.admin { background-color: #f1f0ff; }
+    .message strong {
+        display: block;
+        margin-bottom: 5px;
+        color: #343a40;
+    }
+    .new-message-form {
+        margin-top: 15px;
+    }
+    .new-message-form textarea {
+        width: 100%;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        resize: vertical;
+    }
+    .new-message-form button {
+        margin-top: 10px;
+        background-color: #28a745;
+        color: white;
+        padding: 8px 12px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .new-message-form button:hover {
+        background-color: #218838;
+    }
+    @media (max-width: 768px) {
+        .dispute-card-header, .card-actions {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dispute-container">
+    <div class="dispute-header">
+        <h2>Disputes for Job: {{ job.title }}</h2>
+    </div>
+
+    {% for application in dispute_applications %}
+    <div class="dispute-card" id="card-{{ application.id }}">
+        <div class="dispute-card-header">
+            <div>
+                <h3>{{ application.title }}</h3>
+                <small>ID: {{ application.id }}</small>
+            </div>
+            <div class="badge 
+                {% if application.status == 'pending' %}badge-pending
+                {% elif application.status == 'completed' %}badge-completed
+                {% elif application.status == 'in_progress' %}badge-in-progress
+                {% else %}badge-cancelled
+                {% endif %}">
+                {{ application.status|title }}
+            </div>
+        </div>
+        <div class="dispute-card-body">
+            <p><strong>Created At:</strong> {{ application.created_at }}</p>
+            <p><strong>Description:</strong> {{ application.description }}</p>
+
+            <div class="card-actions">
+                <form method="POST" action="{% url 'accept_conflict' job.id application.disputes.first.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="action-btn accept-btn">Accept Conflict</button>
+                </form>
+
+                <button onclick="toggleMessages({{ application.id }})" class="action-btn toggle-messages-btn">
+                    View Messages
+                </button>
+
+                <a href="{% url 'resolve_dispute' job.id %}?dispute_id={{ application.disputes.first.id }}" class="action-btn resolve-btn">
+                    Resolve Dispute
+                </a>
+            </div>
+
+            <!-- Messages Section -->
+            <div class="message-box" id="messages-{{ application.id }}">
+                <h4>Messages:</h4>
+                {% for message in application.disputes.first.messages.all %}
+                    <div class="message {% if message.sender.is_staff %}admin{% else %}user{% endif %}">
+                        <strong>{{ message.sender.first_name }} {{ message.sender.last_name }} ({{ message.sent_at|date:"M d, Y H:i" }})</strong>
+                        {{ message.content }}
+                    </div>
+                {% empty %}
+                    <p>No messages yet.</p>
+                {% endfor %}
+
+                <!-- New Message Form -->
+                <div class="new-message-form">
+                    <form method="POST" action="{% url 'send_message' application.disputes.first.id %}" class="message-form">
+                        {% csrf_token %}
+                        <textarea name="content" rows="3" placeholder="Type your message..." required></textarea>
+                        <button type="submit">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+        <p>No dispute applications found.</p>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function toggleMessages(applicationId) {
+        const box = document.getElementById('messages-' + applicationId);
+        box.style.display = box.style.display === 'block' ? 'none' : 'block';
+    }
+</script>
+{% endblock %}

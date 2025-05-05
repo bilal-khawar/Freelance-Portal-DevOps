@@ -1,0 +1,268 @@
+{% extends 'base2.html' %}
+
+{% load static %}
+
+{% block title %}Messages | EarnSync{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    #main-content {
+        overflow-y: hidden;
+        min-height: 100vh;
+        max-height: 100vh;
+        background-color: #f5f7fb;
+    }
+
+    .chats-container {
+        display: flex;
+        height: 100vh;
+        background-color: #e9ecf3;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .chat-list {
+        width: 30%;
+        background-color: #ffffff;
+        border-right: 1px solid #d1d9e6;
+        overflow-y: auto;
+        padding: 1.25rem;
+    }
+
+    .chat-list h3 {
+        margin-bottom: 1rem;
+        font-size: 1.2rem;
+        color: #333;
+        font-weight: 600;
+    }
+
+    .chat-item {
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        background-color: #f4f6f8;
+        margin-bottom: 0.75rem;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .chat-item:hover {
+        background-color: #dde3ec;
+    }
+
+    .chat-display {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        background-color: #f8faff;
+        padding: 1rem;
+        visibility: hidden;
+        max-height: 100%;
+    }
+
+    .chat-display-header {
+        background-color: #007bff;
+        padding: 0.75rem 1.25rem;
+        border-radius: 0.5rem;
+        color: white;
+        font-weight: bold;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .chat-display-header button {
+        background: transparent;
+        color: white;
+        border: none;
+        font-size: 1.1rem;
+        cursor: pointer;
+    }
+
+    .chat-messages {
+        display: flex;
+        flex-direction: column-reverse;
+        flex-grow: 1;
+        overflow-y: auto;
+        padding: 1rem;
+        margin-top: 1rem;
+        border-radius: 0.5rem;
+    }
+
+    .chat-input {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        border-top: 1px solid #d1d9e6;
+        background-color: #fff;
+    }
+
+    .chat-input input {
+        flex-grow: 1;
+        padding: 0.5rem 0.75rem;
+        border: 1px solid #ced4da;
+        border-radius: 8px;
+        font-size: 1rem;
+        outline: none;
+    }
+
+    .chat-input button {
+        margin-left: 0.75rem;
+        padding: 0.5rem 1.2rem;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: background-color 0.2s ease-in-out;
+    }
+
+    .chat-input button:hover {
+        background-color: #0056b3;
+    }
+
+    .chat-bubble {
+        border-radius: 1rem;
+        padding: 0.75rem 1rem;
+        margin-bottom: 0.75rem;
+        max-width: 70%;
+        position: relative;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .incoming-chat.chat-bubble {
+        align-self: flex-start;
+        background-color: #dee8f7;
+        color: #333;
+    }
+
+    .outgoing-chat.chat-bubble {
+        align-self: flex-end;
+        background-color: #007bff;
+        color: white;
+    }
+
+    .chat-text {
+        margin: 0;
+        line-height: 1.4;
+        font-size: 0.95rem;
+    }
+
+    .chat-meta {
+        font-size: 0.75rem;
+        margin-top: 0.35rem;
+        color: #999;
+        text-align: right;
+    }
+
+    .outgoing-chat .chat-meta {
+        color: #cce1ff;
+    }
+
+    #last-chat {
+        font-size: 0.85rem;
+        color: #666;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .chat-display-header h5 {
+        margin: 0;
+        font-size: 1rem;
+    }
+
+    /* Tablet view (medium) */
+    @media (max-width: 1024px) {}
+
+
+      /* Very small screens (optional) */
+    @media (max-width: 580px) {
+        .chat-display {
+            display: none;
+        }
+
+        .chat-list {
+            width: 100%;
+            border-radius: 20px;
+        }
+
+        .chats-container {
+            padding: 0rem 0.75rem;
+        }
+    }
+
+    /* Mobile view (small) */
+    @media (min-width: 581px) and (max-width: 768px) {
+        .chats-container {
+            justify-self: flex-end;
+            width: 65%;
+        }
+
+        .chat-list {
+            width: 40%;
+        }
+
+        .chat-display {
+            width: 60%;
+        }
+
+        .chat-item {
+            padding: 0.25rem 1rem;
+        }
+
+        .chat-item h6 {
+            font-size: 0.85rem;
+        }
+
+        .last-chat {
+            font-size: 0.35rem;
+        }
+    }
+
+</style>
+
+{% endblock %}
+
+{% block content %}
+<div class="chats-container">
+    <div class="chat-list" id="chat-list">
+        <h3>Chats</h3>
+        {% for contact in contacts %}
+        <div class="chat-item" onclick="location.href='?contact_id={{ contact.id }}'">
+            <h6>
+                {% if user.user_type == 'freelancer' %}
+                {{ contact.employer.user.get_full_name }}
+                {% else %}
+                {{ contact.freelancer.user.get_full_name }}
+                {% endif %}
+            </h6>
+            <p id="last-chat">{{ contact.messages.last.content|truncatechars:50 }}</p>
+        </div>
+        {% endfor %}
+
+    </div>
+    <div class="chat-display"
+        style=" {% if selected_contact %} visibility: visible; {% else %}visibility: hidden;{% endif %}">
+        <div class="chat-display-header">
+            <h5 id="user-name"></h5>
+            <button class="close-chat" id="close-chat"><i class="fa-solid fa-left-long"></i></button>
+        </div>
+        <div class="chat-messages" id="chat-messages">
+            <!-- Don't render initial messages here; JS will handle it -->
+        </div>
+
+        <div class="chat-input">
+            <input type="text" id="chat-input" placeholder="Type a message...">
+            <button id="send-btn">Send</button>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'JS/Messages.js' %}"></script>
+{% endblock %}

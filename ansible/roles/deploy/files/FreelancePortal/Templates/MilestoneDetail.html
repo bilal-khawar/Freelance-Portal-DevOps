@@ -1,0 +1,190 @@
+{% extends 'base2.html' %}
+{% block title %}Milestone Details{% endblock %}
+
+{% block extra_css %}
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f0f2f5;
+      margin: 0;
+      color: #333;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+    }
+
+    .title-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background-color: white;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+    }
+
+    h2 {
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+      color: #1f2937;
+      text-align: center;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .field-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .field {
+      background-color: #f9fafb;
+      padding: 14px 18px;
+      border-radius: 10px;
+      border: 1px solid #e5e7eb;
+      flex: 1 1 100%;
+    }
+
+    .field.half {
+      flex: 1 1 45%;
+    }
+
+    .label {
+      font-weight: 600;
+      color: #6b7280;
+      font-size: 0.9rem;
+      margin-bottom: 4px;
+    }
+
+    .value {
+      font-size: 1rem;
+      color: #111827;
+    }
+
+    .description-box {
+      white-space: pre-wrap;
+      background: #fffefc;
+      border-left: 4px solid #60a5fa;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    /* ✅ Responsive styles */
+    @media (max-width: 768px) {
+      .card {
+        padding: 20px;
+      }
+
+      .field.half {
+        flex: 1 1 100%;
+      }
+
+      h2 {
+        font-size: 1.5rem;
+      }
+
+      .value {
+        font-size: 0.95rem;
+      }
+
+      .description-box {
+        font-size: 0.9rem;
+      }
+    }
+    
+    .btn-submit {
+      display: inline-block;
+      background-color: #4CAF50;
+      color: white;
+      padding: 12px 24px;
+      font-size: 1rem;
+      border-radius: 8px;
+      text-align: center;
+      text-decoration: none;
+      margin-top: 20px;
+      cursor: pointer;
+    }
+
+    .btn-submit:hover {
+      background-color: #45a049;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <div class="card">
+      <div class="title-container">
+        <h2>Milestone Details</h2>
+      </div>
+      <div class="field-group">
+        <div class="field-row">
+          <div class="field half">
+            <div class="label">Title</div>
+            <div class="value">{{ milestone.title }}</div>
+          </div>
+          <div class="field half">
+            <div class="label">Job</div>
+            <div class="value">{{ milestone.job.title }}</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="label">Description</div>
+          <div class="description-box">
+            {{ milestone.description }}
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field half">
+            <div class="label">Budget</div>
+            <div class="value">${{ milestone.budget }}</div>
+          </div>
+          <div class="field half">
+            <div class="label">Status</div>
+            <div class="value">{{ milestone.get_status_display }}</div>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field half">
+            <div class="label">Start Date</div>
+            <div class="value">{{ milestone.start_date|date:"d M Y" }}</div>
+          </div>
+          <div class="field half">
+            <div class="label">Expected End Date</div>
+            <div class="value">{{ milestone.expected_end_date|date:"d M Y" }}</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="label">Completed Date</div>
+          <div class="value">
+            {{ milestone.completed_date|default:"Not yet completed" }}
+          </div>
+        </div>
+
+        <!-- Button to open the submission page -->
+        <a href="{% url 'milestone_submission' milestone.id %}" class="btn-submit">Submit New Submission</a>
+      </div>
+    </div>
+  </div>
+{% endblock %}

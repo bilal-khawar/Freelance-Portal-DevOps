@@ -1,0 +1,125 @@
+{% extends 'base2.html' %}
+{% block title %}Submit a Dispute{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f5f5f5;
+        margin: 2rem;
+        margin-left: 0;
+    }
+
+    .card {
+        background: white;
+        border-radius: 10px;
+        padding: 30px;
+        max-width: 700px;
+        margin: auto;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+        margin-top: 0;
+        font-size: 1.8rem;
+        color: #333;
+        text-align: center;
+    }
+
+    label {
+        font-weight: bold;
+        color: #333;
+        display: block;
+        margin-top: 40px;
+        margin-bottom: 5px;
+    }
+
+    input[type="text"],
+    textarea,
+    select {
+        width: 100%;
+        padding: 10px 3%;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 1rem;
+        background-color: #fafafa;
+    }
+
+    textarea {
+        resize: vertical;
+    }
+
+    button[type="submit"] {
+        margin-top: 30px;
+        background-color: #007bff;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 6px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        width: 50%;
+    }
+
+    button[type="submit"]:hover {
+        background-color: #0056b3;
+    }
+
+    .button-container {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    @media (max-width: 768px) {
+        body {
+            margin: 0;
+        }
+
+        .card {
+            padding: 20px;
+            margin: 1.25rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .card {
+            padding: 15px;
+            margin: 1rem;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+        }
+
+        input[type="text"],
+        textarea,
+        select {
+            font-size: 0.9rem;
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            font-size: 0.9rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Submit a Dispute</h2>
+    <form method="POST" action="{% url 'submit_dispute' job.id %}">
+        {% csrf_token %}
+        <label for="title">Dispute Title:</label>
+        <input type="text" name="title" id="title" required>
+
+        <label for="description">Description:</label>
+        <textarea name="description" id="description" rows="4" required></textarea>
+
+        <div class="button-container">
+            <button type="submit">Submit Dispute</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

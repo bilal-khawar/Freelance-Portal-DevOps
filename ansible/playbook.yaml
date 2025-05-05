@@ -1,0 +1,6 @@
+- name: Deploy Django App to EC2
+  hosts: web
+  become: true
+
+  roles:
+    - deploy

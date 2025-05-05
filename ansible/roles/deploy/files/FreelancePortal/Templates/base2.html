@@ -1,0 +1,188 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=0.8, maximum-scale=1.0, user-scalable=no">    <title>{% block title %}EarnSync{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    
+    {% block extra_css %}{% endblock %}
+    
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f6f9;
+            width: 100vw;
+        }
+        
+        .sidebar {
+            background: linear-gradient(135deg, #4a6fdc 0%, #6c8ff2 100%);
+            color: white;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding-top: 20px;
+            width: 250px;
+        }
+        
+        .sidebar a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .sidebar a:hover {
+            color: white;
+        }
+        
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+        
+        .card {
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: none;
+        }
+        
+        .btn-primary {
+            background-color: #4a6fdc;
+            border-color: #4a6fdc;
+        }
+        
+        .nav-pills .nav-link.active {
+            background-color: white;
+            color: #4a6fdc;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 0;
+                padding: 20px 0px;
+            }
+
+            body{
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar Toggle for small screens -->
+    <nav class="navbar bg-primary d-md-none">
+        <div class="container-fluid">
+            <button class="btn text-white" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">
+                <i class="fas fa-bars"></i>
+            </button>
+            <span class="navbar-brand text-white ms-2">EarnSync</span>
+        </div>
+    </nav>
+    
+    <!-- Offcanvas Sidebar (Mobile Only) -->
+    <div class="offcanvas offcanvas-start d-md-none" tabindex="-1" id="mobileSidebar">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title">EarnSync</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body">
+            <nav class="nav nav-pills flex-column">
+                <a class="nav-link {% if request.path == '/dashboard/' %}active{% endif %}" href="{% url 'dashboard' %}">
+                    <i class="fas fa-home me-2"></i> Dashboard
+                </a>
+                <a class="nav-link {% if request.path == '/profile/' %}active{% endif %}" href="{% url 'profile' %}">
+                    <i class="fas fa-user me-2"></i> Profile
+                </a>
+                <a class="nav-link {% if request.path == '/projects/' %}active{% endif %}" href="{% url 'projects' %}">
+                    <i class="fas fa-project-diagram me-2"></i> Projects
+                </a>
+                {% if  user.user_type != 'admin' %}
+                <a class="nav-link {% if request.path == '/messages/' %}active{% endif %}" href="{% url 'messages' %}">
+                    <i class="fas fa-comments me-2"></i> Messages
+                </a>
+                {% endif %}
+                <a class="nav-link {% if request.path == '/settings/' %}active{% endif %}" href="#">
+                    <i class="fas fa-cog me-2"></i> Settings
+                </a>
+                <hr class="my-3">
+                <a class="nav-link" href="{% url 'logout' %}">
+                    <i class="fas fa-sign-out-alt me-2"></i> Logout
+                </a>
+            </nav>
+        </div>
+    </div>
+    
+    <!-- Static Sidebar for desktop -->
+    <div class="d-none d-md-block sidebar">
+        <div class="text-center mb-5">
+            <h2 class="text-white">EarnSync</h2>
+        </div>
+        <nav class="nav nav-pills flex-column px-3">
+            <a class="nav-link {% if request.path == '/dashboard/' %}active{% endif %}" href="{% url 'dashboard' %}">
+                <i class="fas fa-home me-2"></i> Dashboard
+            </a>
+            <a class="nav-link {% if request.path == '/profile/' %}active{% endif %}" href="{% url 'profile' %}">
+                <i class="fas fa-user me-2"></i> Profile
+            </a>
+            <a class="nav-link {% if request.path == '/projects/' %}active{% endif %}" href="{% url 'projects' %}">
+                <i class="fas fa-project-diagram me-2"></i> Projects
+            </a>
+            {% if  user.user_type != 'admin' %}
+            <a class="nav-link {% if request.path == '/messages/' %}active{% endif %}" href="{% url 'messages' %}">
+                <i class="fas fa-comments me-2"></i> Messages
+            </a>
+            {% endif %}
+            <a class="nav-link {% if request.path == '/settings/' %}active{% endif %}" href="#">
+                <i class="fas fa-cog me-2"></i> Settings
+            </a>
+            <hr class="text-white my-3">
+            <a class="nav-link" href="{% url 'logout' %}">
+                <i class="fas fa-sign-out-alt me-2"></i> Logout
+            </a>
+        </nav>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content" id="main-content">
+        {% if messages %}
+            <div class="messages mt-3">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    
+        {% block content %}{% endblock %}
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        let metaViewport = document.querySelector("meta[name='viewport']");
+        if (!metaViewport) {
+            metaViewport = document.createElement("meta");
+            metaViewport.name = "viewport";
+            document.head.appendChild(metaViewport);
+        }
+        
+        metaViewport.content = "width=device-width, initial-scale=0.8, maximum-scale=1.0, user-scalable=no";
+        
+        document.body.style.overflowX = "hidden";
+    });
+</script>
+</html>
+    
