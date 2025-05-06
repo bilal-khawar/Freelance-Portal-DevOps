@@ -1,0 +1,39 @@
+Follow Tutorial from Sir's repo for setting up ArgoCD UI (Mak sure to locally pull Sir's repo and install helm and make sure to follow instructions to extract your ArgoCD password (username: admin))
+
+ArgoCD CLI Setup
+    $version = (Invoke-RestMethod https://api.github.com/repos/argoproj/argo-cd/releases/latest).tag_name
+
+    $url = "https://github.com/argoproj/argo-cd/releases/download/" + $version + "/argocd-windows-amd64.exe"
+    $output = "argocd.exe"
+
+    Invoke-WebRequest -Uri $url -OutFile $output
+
+    [Environment]::SetEnvironmentVariable("Path", "$env:Path;C:\Path\To\ArgoCD-CLI", "User")
+
+Port forwarding to expose ArgoCD UI on localhost:8080 (will give warning because of https. ignore)
+    kubectl port-forward svc/argocd-server -n argocd 8080:443
+
+Login to ArgoCD (Use CMD not Powershell)
+    argocd login localhost:8080 --username admin --password <RETRIEVED_PASSWORD> --insecure
+
+Register repository to ArgoCD
+    1. Generate a GitHub PAT:
+    * Go to [GitHub → Developer Settings → Personal Access Tokens](https://github.com/settings/tokens).
+    * Click "Generate new token (classic)".
+    * Select scopes: `repo` (read access is enough).
+    * Copy the token.
+
+    2. Create a secret in ArgoCD (replace placeholders):
+    kubectl create secret generic github-creds --namespace argocd --from-literal=username=<your-github-username> --from-literal=password=<your-pat-token>
+
+    3. Register the repo in ArgoCD:
+    argocd repo add https://github.com/bilal-khawar/Freelance-Portal-DevOps --username <your_github_username> --password <your_github_pat>
+
+    You must run this from a machine that has the `argocd` CLI installed and is logged in to the ArgoCD server (`argocd login`).
+
+Apply the ArgoCD Manifest (yaml) file to K8s Cluster
+    kubectl apply -f ArgoCD.yaml -n argocd
+
+Check app status
+    argocd app get freelance-portal
+    argocd app sync freelance-portal
