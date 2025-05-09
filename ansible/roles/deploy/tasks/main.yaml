@@ -27,9 +27,17 @@
     path: /opt/freelance-portal
     state: directory
 
+- name: Set permissions for app files
+  file:
+    path: /opt/freelance-portal/FreelancePortal/
+    owner: ubuntu
+    group: ubuntu
+    mode: 0755
+    recurse: yes
+
 - name: Copy app source code
   copy:
-    src: FreelancePortal/
+    src: /mnt/e/Desktop_stuff/SEMESTER-6/Github/Freelance-Portal-DevOps/FreelancePortal/
     dest: /opt/freelance-portal/FreelancePortal/
     mode: 0755
 
@@ -48,3 +56,5 @@
   command: docker run -d -p 8000:8000 --env-file .env freelance-portal
   args:
     chdir: /opt/freelance-portal/FreelancePortal/
+
+

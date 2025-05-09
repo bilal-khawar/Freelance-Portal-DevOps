@@ -1,6 +1,30 @@
-- name: Deploy Django App to EC2
-  hosts: web
+---
+- name: Configure Django Server
+  hosts: django
   become: true
 
-  roles:
-    - deploy
+  tasks:
+    - name: Update APT packages
+      apt:
+        update_cache: yes
+      when: ansible_os_family == "Debian"
+
+    - name: Install Python3 and pip
+      apt:
+        name:
+          - python3
+          - python3-pip
+        state: present
+      when: ansible_os_family == "Debian"
+
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+      when: ansible_os_family == "Debian"
+
+    - name: Start Docker
+      service:
+        name: docker
+        state: started
+        enabled: true
