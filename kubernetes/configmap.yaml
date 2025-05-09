@@ -6,4 +6,4 @@ metadata:
 data:
   DEBUG: "True"
   USE_SQLITE: "True"
-  ALLOWED_HOSTS: "localhost,127.0.0.1"
+  ALLOWED_HOSTS: "localhost,127.0.0.1,100.24.52.131"

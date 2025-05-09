@@ -1,60 +1,94 @@
-- name: Update apt
-  apt:
-    update_cache: yes
+---
+- name: Set up Freelance Portal
+  hosts: all
+  become: true
 
-- name: Install Docker
-  apt:
-    name: docker.io
-    state: present
+  tasks:
+    - name: Update apt
+      apt:
+        update_cache: yes
 
-- name: Install pip & Docker Python package
-  apt:
-    name: python3-pip
-    state: present
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
 
-- name: Install Docker Compose
-  pip:
-    name: docker-compose
+    - name: Install pip (for possible Python needs)
+      apt:
+        name: python3-pip
+        state: present
 
-- name: Ensure Docker service is running
-  service:
-    name: docker
-    state: started
-    enabled: yes
+    - name: Install unzip
+      apt:
+        name: unzip
+        state: present
 
-- name: Create app directory
-  file:
-    path: /opt/freelance-portal
-    state: directory
+    - name: Ensure Docker service is running
+      service:
+        name: docker
+        state: started
+        enabled: yes
 
-- name: Set permissions for app files
-  file:
-    path: /opt/freelance-portal/FreelancePortal/
-    owner: ubuntu
-    group: ubuntu
-    mode: 0755
-    recurse: yes
+    - name: Create app directory
+      file:
+        path: /opt/freelance-portal
+        state: directory
 
-- name: Copy app source code
-  copy:
-    src: /mnt/e/Desktop_stuff/SEMESTER-6/Github/Freelance-Portal-DevOps/FreelancePortal/
-    dest: /opt/freelance-portal/FreelancePortal/
-    mode: 0755
+    - name: Upload zipped source code
+      copy:
+        src: /mnt/e/Bilal_temp/Github/Freelance-Portal-DevOps/FreelancePortal.zip
+        dest: /opt/freelance-portal/FreelancePortal.zip
+        mode: '0644'
 
-- name: Copy .env file
-  copy:
-    src: .env
-    dest: /opt/freelance-portal/FreelancePortal/.env
-    mode: 0600
+    - name: Unzip app source code on remote
+      unarchive:
+        src: /opt/freelance-portal/FreelancePortal.zip
+        dest: /opt/freelance-portal/
+        remote_src: yes
 
-- name: Build Docker image
-  command: docker build -t freelance-portal .
-  args:
-    chdir: /opt/freelance-portal/FreelancePortal/
+    - name: Remove uploaded ZIP file after extraction
+      file:
+        path: /opt/freelance-portal/FreelancePortal.zip
+        state: absent
 
-- name: Run Docker container
-  command: docker run -d -p 8000:8000 --env-file .env freelance-portal
-  args:
-    chdir: /opt/freelance-portal/FreelancePortal/
+    - name: Set permissions for app files
+      file:
+        path: /opt/freelance-portal/FreelancePortal/
+        owner: ubuntu
+        group: ubuntu
+        mode: '0755'
+        recurse: yes
 
+    - name: Copy .env file
+      copy:
+        src: /mnt/e/Bilal_temp/Github/Freelance-Portal-DevOps/ansible/.env
+        dest: /opt/freelance-portal/FreelancePortal/.env
+        mode: '0600'
 
+    - name: Check if a container is running on port 8000
+      shell: |
+        docker ps -q -f "publish=8000"
+      register: container_id
+      ignore_errors: true
+
+    - name: Stop the running container on port 8000 if it exists
+      shell: |
+        docker stop {{ container_id.stdout }}
+      when: container_id.stdout != ""
+      ignore_errors: true
+
+    - name: Remove the container if it exists
+      shell: |
+        docker rm {{ container_id.stdout }}
+      when: container_id.stdout != ""
+      ignore_errors: true
+
+    - name: Force rebuild Docker image with updated source
+      shell: docker build --no-cache -t freelance-portal .
+      args:
+        chdir: /opt/freelance-portal/FreelancePortal/
+
+    - name: Run Docker container
+      shell: docker run -d -p 8000:8000 --env-file .env freelance-portal
+      args:
+        chdir: /opt/freelance-portal/FreelancePortal/

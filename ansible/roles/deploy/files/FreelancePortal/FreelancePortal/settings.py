@@ -20,9 +20,13 @@ ALLOWED_HOSTS = [
     'freelance.local',
     '127.0.0.1', 
     'localhost', 
+    '100.24.52.131', 
     'https://software-engineering-freelancer-portal.vercel.app/',
     '.vercel.app'
 ]
+
+if '100.24.52.131' not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append('100.24.52.131')
 
 # Application definition
 INSTALLED_APPS = [
